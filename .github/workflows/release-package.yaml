@@ -68,9 +68,7 @@ jobs:
         with:
           python-version: '3.11'
           architecture: 'x64'
-      - name: Get Python version
-        run: python -V
       - name: Install dependencies
-        run: pip install gql
+        run: pip install "gql[all]"
       - name: Run Python
         run: python src/runpod_client.py

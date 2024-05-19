@@ -53,4 +53,24 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+  deploy-to-runpod:
+    runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4  
+      - name: Setup Python environments
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.11'
+          architecture: 'x64'
+      - name: Get Python version
+        run: python -V
+      - name: Install dependencies
+        run: pip install gql
+      - name: Run Python
+        run: python src/runpod_client.py

@@ -17,7 +17,7 @@ if __name__ == "__main__":
         )
         client = Client(transport=transport)
 
-        with Path.open(Path("serverless.gql")) as f:
+        with Path.open(Path("runpod_save_template.gql")) as f:
             lines = f.read()
 
         query = gql(lines)

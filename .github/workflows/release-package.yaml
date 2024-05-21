@@ -71,4 +71,4 @@ jobs:
       - name: Install dependencies
         run: pip install "gql[all]"
       - name: Run Python
-        run: python src/runpod_client.py
+        run: python src/runpod_client.py --api_key=${{ secrets.RUNPOD_API_KEY }} --image_name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}

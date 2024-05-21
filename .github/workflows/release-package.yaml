@@ -52,6 +52,7 @@ jobs:
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
+        cache: enabled
         with:
           context: .
           push: true

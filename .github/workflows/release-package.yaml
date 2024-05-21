@@ -16,6 +16,9 @@ jobs:
       contents: read
       packages: write
     
+    outputs:
+      image-tags: ${{ steps.meta.outputs.tags }}
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,13 +50,21 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       
       - name: Build and push Docker image
+        id: push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      
+      - name: Set image tags for deploy job
+        run: echo "::set-output name=value:${{ steps.meta.outputs.tags }}"
+
   deploy-to-runpod:
+    needs: build-and-push-image
     runs-on: ubuntu-latest
 
     permissions:
@@ -62,13 +73,19 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4  
+        uses: actions/checkout@v4
+
       - name: Setup Python environments
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           architecture: 'x64'
+
       - name: Install dependencies
         run: pip install "gql[all]"
-      - name: Run Python
-        run: python src/runpod_client.py --api_key=${{ secrets.RUNPOD_API_KEY }} --image_name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Deploy image to RunPod Serverless
+        run: >
+          python src/runpod_client.py
+          --api_key=${{ secrets.RUNPOD_API_KEY }}
+          --image_name=${{ needs.build-and-push-image.outputs.image-tags }}

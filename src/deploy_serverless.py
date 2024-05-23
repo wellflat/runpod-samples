@@ -8,11 +8,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from gql import Client
-from gql import gql
+from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
-from gql.transport.exceptions import TransportQueryError
-from gql.transport.exceptions import TransportServerError
+from gql.transport.exceptions import TransportQueryError, TransportServerError
 
 
 def parse_args() -> argparse.Namespace:

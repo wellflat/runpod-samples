@@ -1,0 +1,7 @@
+mutation saveTemplate($input: SaveTemplateInput) {
+  saveTemplate(input: $input) {
+      id
+      imageName
+      name
+  }
+}

@@ -93,6 +93,6 @@ jobs:
 
       - name: Deploy image to RunPod Serverless
         run: >
-          python src/runpod_client.py
+          python src/deploy_serverless.py
           --api_key=${{ secrets.RUNPOD_API_KEY }}
           --image_name=${{ needs.build-and-push-image.outputs.image-tags }}

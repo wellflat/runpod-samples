@@ -15,7 +15,6 @@ RunpodResponse = dict[str, dict[str, str]]
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Deploy container to RunPod Serverless")
     parser.add_argument("--api_key", type=str, default=None, help="RunPod API key")
-    parser.add_argument("--template_id", required=True, type=str, help="RunPod template ID")
     parser.add_argument("--image_name", required=True, type=str, help="Target container image name")
     return parser.parse_args()
 

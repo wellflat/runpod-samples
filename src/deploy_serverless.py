@@ -5,67 +5,68 @@ import asyncio
 import json
 import os
 import sys
-from pathlib import Path
-from typing import Any
 
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
 from gql.transport.exceptions import TransportQueryError, TransportServerError
 
+RunpodResponse = dict[str, dict[str, str]]
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Deploy container to RunPod Serverless")
-    parser.add_argument("--api_key", type=str, default=None, help="RunPod API Key")
+    parser.add_argument("--api_key", type=str, default=None, help="RunPod API key")
+    parser.add_argument("--template_id", required=True, type=str, help="RunPod template ID")
     parser.add_argument("--image_name", required=True, type=str, help="Target container image name")
     return parser.parse_args()
 
-async def request_save_template(gql_path: Path, args: argparse.Namespace) -> dict[str, Any]:
+async def request_save_template(args: argparse.Namespace) -> RunpodResponse:
     api_key = args.api_key if args.api_key else os.getenv("RUNPOD_API_KEY")
     image_name = args.image_name
-    with Path.open(gql_path) as f:
-        lines = f.read()
-
-    params = {
-        "input": {
-            "advancedStart": False,
-            "containerDiskInGb": 5,
-            "containerRegistryAuthId": "clutj6gj60001l7062275rxfi",
-            "dockerArgs": "",
-            "env": [],
-            "id": "48l430fsrb",
-            "imageName": image_name,
-            "isPublic": False,
-            "isServerless": True,
-            "name": "from_ghcr",
-            "ports": "",
-            "readme": "",
-            "startJupyter": False,
-            "startScript": "",
-            "startSsh": False,
-            "volumeInGb": 0,
-            "volumeMountPath": "/workspace",
-            "config": {
-                "templateId": "48l430fsrb",
-                "category": "GPU",
-            },
-        },
-    }
-
+    query = """
+        mutation saveTemplate($input: SaveTemplateInput) {
+            saveTemplate(input: $input) {
+                id
+                imageName
+                name
+            }
+        }"""
     transport = AIOHTTPTransport(
         url=f"https://api.runpod.io/graphql?api_key={api_key}",
     )
     async with Client(transport=transport) as session:
-        query = gql(lines)
-        return await session.execute(query, variable_values=params, parse_result=True)
+        variables = {
+            "input": {
+                "advancedStart": False,
+                "containerDiskInGb": 5,
+                "containerRegistryAuthId": "clutj6gj60001l7062275rxfi",
+                "dockerArgs": "",
+                "env": [{"key": "test-key2", "value": "test-value2"}],
+                "id": "48l430fsrb",
+                "imageName": image_name,
+                "isPublic": False,
+                "isServerless": True,
+                "name": "from_ghcr",
+                "ports": "",
+                "readme": "",
+                "startJupyter": False,
+                "startScript": "",
+                "startSsh": False,
+                "volumeInGb": 0,
+                "volumeMountPath": "/workspace",
+                #"config": {
+                #    "templateId": "48l430fsrb",
+                #    "category": "GPU",
+                #},
+            },
+        }
+        return await session.execute(gql(query), variable_values=variables)
 
 async def main() -> None:
     try:
         args = parse_args()
-        gql_path = Path(__file__).parent / "runpod_save_template2.gql"
-        result = await request_save_template(gql_path, args)
-        sys.stdout.write(json.dumps(result, indent=2))
+        response = await request_save_template(args)
+        sys.stdout.write(json.dumps(response, indent=2))
     except TransportQueryError as e:
-        ## TODO logging
         sys.stderr.write(str(e))
     except TransportServerError as e:
         sys.stderr.write(str(e))

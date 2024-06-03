@@ -8,19 +8,23 @@ import sys
 
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
-from gql.transport.exceptions import TransportQueryError, TransportServerError
+from gql.transport.exceptions import TransportError
 
 RunpodResponse = dict[str, dict[str, str]]
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Deploy container to RunPod Serverless")
-    parser.add_argument("--api_key", type=str, default=None, help="RunPod API key")
-    parser.add_argument("--image_name", required=True, type=str, help="Target container image name")
+    parser.add_argument("--api_key", type=str, help="RunPod API key")
+    parser.add_argument("--registry_auth_id", required=True, type=str, help="RunPod registory authentication ID")
+    parser.add_argument("--image_name", type=str, required=True, help="Target container image name")
+    parser.add_argument("--template_id", type=str, required=True, help="RunPod template ID")
     return parser.parse_args()
 
 async def request_save_template(args: argparse.Namespace) -> RunpodResponse:
     api_key = args.api_key if args.api_key else os.getenv("RUNPOD_API_KEY")
+    registry_auth_id = args.registry_auth_id
     image_name = args.image_name
+    template_id = args.template_id
     query = """
         mutation saveTemplate($input: SaveTemplateInput) {
             saveTemplate(input: $input) {
@@ -37,10 +41,10 @@ async def request_save_template(args: argparse.Namespace) -> RunpodResponse:
             "input": {
                 "advancedStart": False,
                 "containerDiskInGb": 5,
-                "containerRegistryAuthId": "clutj6gj60001l7062275rxfi",
+                "containerRegistryAuthId": registry_auth_id,
                 "dockerArgs": "",
                 "env": [{"key": "test-key2", "value": "test-value2"}],
-                "id": "48l430fsrb",
+                "id": template_id,
                 "imageName": image_name,
                 "isPublic": False,
                 "isServerless": True,
@@ -52,10 +56,10 @@ async def request_save_template(args: argparse.Namespace) -> RunpodResponse:
                 "startSsh": False,
                 "volumeInGb": 0,
                 "volumeMountPath": "/workspace",
-                #"config": {
-                #    "templateId": "48l430fsrb",
-                #    "category": "GPU",
-                #},
+                "config": {
+                    "templateId": template_id,
+                    "category": "GPU",
+                },
             },
         }
         return await session.execute(gql(query), variable_values=variables)
@@ -65,9 +69,10 @@ async def main() -> None:
         args = parse_args()
         response = await request_save_template(args)
         sys.stdout.write(json.dumps(response, indent=2))
-    except TransportQueryError as e:
+        sys.exit(0)
+    except TransportError as e:
         sys.stderr.write(str(e))
-    except TransportServerError as e:
-        sys.stderr.write(str(e))
+        sys.exit(-1)
+
 
 asyncio.run(main())

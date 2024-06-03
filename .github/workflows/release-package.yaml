@@ -85,14 +85,17 @@ jobs:
       - name: Setup Python environments
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-varsion-file: "pyproject.toml"
           architecture: 'x64'
+          cache: pip
 
       - name: Install dependencies
-        run: pip install "gql[all]"
+        run: pip install -r src/requirements.txt
 
       - name: Deploy image to RunPod Serverless
         run: >
           python src/deploy_serverless.py
           --api_key=${{ secrets.RUNPOD_API_KEY }}
+          --registry_auth_id=test_auth_id
           --image_name=${{ needs.build-and-push-image.outputs.image-tags }}
+          --template_id=test_template_id

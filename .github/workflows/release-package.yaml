@@ -74,6 +74,8 @@ jobs:
     needs: build-and-push-image
     runs-on: ubuntu-latest
 
+    environments: dev
+
     permissions:
       contents: read
       packages: write
@@ -96,6 +98,7 @@ jobs:
         run: >
           python src/deploy_serverless.py
           --api_key=${{ secrets.RUNPOD_API_KEY }}
-          --registry_auth_id=test_auth_id
+          --registry_auth_id=${{ secrets.REGISTRY_AUTH_ID }}
           --image_name=${{ needs.build-and-push-image.outputs.image-tags }}
-          --template_id=test_template_id
+          --template_id=t${{ vars.TEMPLATE_ID }}
+          | jq

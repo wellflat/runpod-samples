@@ -1,15 +1,8 @@
 name: create and publish a docker image
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        required: true
-        options:
-          - 'dev'
-          - 'prod'
-  #push:
-  #  branches: ['release']
+  push:
+    branches: ['release']
 
 env:
   REGISTRY: ghcr.io
@@ -88,6 +81,9 @@ jobs:
       packages: write
     
     steps:
+      - name: Test github.ref
+        run: echo ${{ github.ref }}
+      
       - name: Checkout repository
         uses: actions/checkout@v4
 

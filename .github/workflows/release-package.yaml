@@ -1,6 +1,13 @@
 name: create and publish a docker image
 
 on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        options:
+          - 'dev'
+          - 'prod'
   push:
     branches: ['release']
 
@@ -74,7 +81,7 @@ jobs:
     needs: build-and-push-image
     runs-on: ubuntu-latest
 
-    environment: dev
+    environment: ${{ inputs.environment }}
 
     permissions:
       contents: read

@@ -102,4 +102,4 @@ jobs:
           --image_name=${{ needs.build-and-push-image.outputs.image-tags }}
           --template_id=${{ vars.TEMPLATE_ID }}
           --template_name=${{ vars.TEMPLATE_NAME }}
-          | jq
+          | jq -r '.saveTemplate.imageName, .saveTemplate.name' | xargs -n1 echo '::notice::'

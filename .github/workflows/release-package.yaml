@@ -100,5 +100,6 @@ jobs:
           --api_key=${{ secrets.RUNPOD_API_KEY }}
           --registry_auth_id=${{ secrets.REGISTRY_AUTH_ID }}
           --image_name=${{ needs.build-and-push-image.outputs.image-tags }}
-          --template_id=t${{ vars.TEMPLATE_ID }}
+          --template_id=${{ vars.TEMPLATE_ID }}
+          --template_name=${{ vars.TEMPLATE_NAME }}
           | jq

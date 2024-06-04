@@ -87,7 +87,7 @@ jobs:
       - name: Setup Python environments
         uses: actions/setup-python@v5
         with:
-          python-varsion-file: "pyproject.toml"
+          python-version-file: "pyproject.toml"
           architecture: 'x64'
           cache: pip
 

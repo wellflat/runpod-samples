@@ -18,6 +18,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--registry_auth_id", required=True, type=str, help="RunPod registory authentication ID")
     parser.add_argument("--image_name", type=str, required=True, help="Target container image name")
     parser.add_argument("--template_id", type=str, required=True, help="RunPod template ID")
+    parser.add_argument("--template_name", type=str, required=True, help="RunPod template name")
     return parser.parse_args()
 
 async def request_save_template(args: argparse.Namespace) -> RunpodResponse:
@@ -25,6 +26,7 @@ async def request_save_template(args: argparse.Namespace) -> RunpodResponse:
     registry_auth_id = args.registry_auth_id
     image_name = args.image_name
     template_id = args.template_id
+    template_name = args.template_name
     query = """
         mutation saveTemplate($input: SaveTemplateInput) {
             saveTemplate(input: $input) {
@@ -48,7 +50,7 @@ async def request_save_template(args: argparse.Namespace) -> RunpodResponse:
                 "imageName": image_name,
                 "isPublic": False,
                 "isServerless": True,
-                "name": "from_ghcr",
+                "name": template_name,
                 "ports": "",
                 "readme": "",
                 "startJupyter": False,

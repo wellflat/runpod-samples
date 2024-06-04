@@ -8,8 +8,8 @@ on:
         options:
           - 'dev'
           - 'prod'
-  push:
-    branches: ['release']
+  #push:
+  #  branches: ['release']
 
 env:
   REGISTRY: ghcr.io

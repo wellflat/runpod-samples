@@ -1,8 +1,15 @@
 name: create and publish a docker image
 
 on:
-  push:
-    branches: ['release']
+  workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        options:
+          - 'dev'
+          - 'prod'
+  #push:
+  #  branches: ['release']
 
 env:
   REGISTRY: ghcr.io
@@ -27,8 +34,8 @@ jobs:
         id: generate_token
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.PRIVATE_KEY }}
+          app-id: ${{ vars.GH_APP_ID }}
+          private-key: ${{ secrets.GH_PRIVATE_KEY }}
       
       - name: Use token
         run: echo "$GITHUB_TOKEN"
@@ -74,6 +81,8 @@ jobs:
     needs: build-and-push-image
     runs-on: ubuntu-latest
 
+    environment: ${{ inputs.environment }}
+
     permissions:
       contents: read
       packages: write
@@ -85,14 +94,19 @@ jobs:
       - name: Setup Python environments
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version-file: "pyproject.toml"
           architecture: 'x64'
+          cache: pip
 
       - name: Install dependencies
-        run: pip install "gql[all]"
+        run: pip install -r src/requirements.txt
 
       - name: Deploy image to RunPod Serverless
         run: >
           python src/deploy_serverless.py
           --api_key=${{ secrets.RUNPOD_API_KEY }}
+          --registry_auth_id=${{ secrets.REGISTRY_AUTH_ID }}
           --image_name=${{ needs.build-and-push-image.outputs.image-tags }}
+          --template_id=${{ vars.TEMPLATE_ID }}
+          --template_name=${{ vars.TEMPLATE_NAME }}
+          | jq -r '.saveTemplate.imageName, .saveTemplate.name' | xargs -n1 echo '::notice::'

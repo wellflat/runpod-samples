@@ -1,15 +1,8 @@
 name: create and publish a docker image
 
 on:
-  workflow_dispatch:
-    inputs:
-      environment:
-        required: true
-        options:
-          - 'dev'
-          - 'prod'
-  #push:
-  #  branches: ['release']
+  push:
+    branches: ['release']
 
 env:
   REGISTRY: ghcr.io
@@ -81,7 +74,7 @@ jobs:
     needs: build-and-push-image
     runs-on: ubuntu-latest
 
-    environment: ${{ inputs.environment }}
+    environment: dev
 
     permissions:
       contents: read
@@ -109,4 +102,4 @@ jobs:
           --image_name=${{ needs.build-and-push-image.outputs.image-tags }}
           --template_id=${{ vars.TEMPLATE_ID }}
           --template_name=${{ vars.TEMPLATE_NAME }}
-          | jq -r '.saveTemplate.imageName, .saveTemplate.name' | xargs -n1 echo '::notice::'
+          | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_STEP_SUMMARY}

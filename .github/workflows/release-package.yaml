@@ -62,9 +62,9 @@ jobs:
 
       - name: Setup Environments
         if: github.ref_name == 'develop'
-        run: |
-          echo '${{ toJson(github) }}'
-          echo "deploy=dev" >> $GITHUB_ENV
+        run: echo "deploy=dev" >> $GITHUB_ENV
+        else:
+        run: echo "deploy=prod" >> $GITHUB_ENV
           
       - name: Build and push Docker image
         id: push
@@ -84,17 +84,13 @@ jobs:
     needs: build-and-push-image
     runs-on: ubuntu-latest
 
-    environment: dev
+    environment: ${{ needs.build-and-push-image.outputs.deploy-env }}
 
     permissions:
       contents: read
       packages: write
     
     steps:
-      - name: Debug ENV
-        run: |
-          echo ${{ needs.build-and-push-image.outputs.deploy-env }}
-      
       - name: Checkout repository
         uses: actions/checkout@v4
 

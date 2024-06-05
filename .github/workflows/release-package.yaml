@@ -62,7 +62,7 @@ jobs:
 
       - name: Setup Environments
         run: |
-          if [[ "${{ github.ref_name }}" == "develop" ]; then
+          if [ "${{ github.ref_name }}" == "develop" ]; then
             echo "set development environment"
             echo "deploy=dev" >> $GITHUB_ENV
           else

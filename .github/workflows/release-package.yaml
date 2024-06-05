@@ -61,14 +61,10 @@ jobs:
           driver-opts: image=moby/buildkit:latest
 
       - name: Setup Environments
-        if: github.ref_name == 'release'
+        if: github.ref_name == 'develop'
         run: |
           echo '${{ toJson(github) }}'
           echo "deploy=dev" >> $GITHUB_ENV
-        if: github.ref_name == 'main'
-        run: |
-          echo "deploy=prod" >> $GITHUB_ENV
-
           
       - name: Build and push Docker image
         id: push

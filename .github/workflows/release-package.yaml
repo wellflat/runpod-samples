@@ -2,7 +2,10 @@ name: create and publish a docker image
 
 on:
   push:
-    branches: ['release']
+    branches: ['develop']
+  pull_request:
+    branches: ['main']
+    types: [closed]
 
 env:
   REGISTRY: ghcr.io
@@ -18,6 +21,7 @@ jobs:
     
     outputs:
       image-tags: ${{ steps.meta.outputs.tags }}
+      deploy-env: ${{ env.deploy }}
     
     steps:
       - name: Checkout repository
@@ -56,6 +60,16 @@ jobs:
           version: latest
           driver-opts: image=moby/buildkit:latest
 
+      - name: Setup Environments
+        if: github.ref_name == 'release'
+        run: |
+          echo '${{ toJson(github) }}'
+          echo "deploy=dev" >> $GITHUB_ENV
+        if: github.ref_name == 'main'
+        run: |
+          echo "deploy=prod" >> $GITHUB_ENV
+
+          
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@v5
@@ -81,6 +95,10 @@ jobs:
       packages: write
     
     steps:
+      - name: Debug ENV
+        run: |
+          echo ${{ needs.build-and-push-image.outputs.deploy-env }}
+      
       - name: Checkout repository
         uses: actions/checkout@v4
 

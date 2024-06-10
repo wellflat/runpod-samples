@@ -107,9 +107,6 @@ jobs:
           image-name: ${{ needs.build-and-push-image.outputs.image-tags }}
           template-id: ${{ vars.TEMPLATE_ID }}
           template-name: ${{ vars.TEMPLATE_NAME }}
-      
-      - name: Check deploy result
-        run: echo ${{ steps.deploy.outputs.api-result }}
 
       # - name: Setup Python environments
       #   uses: actions/setup-python@v5

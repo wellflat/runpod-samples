@@ -20,10 +20,6 @@ inputs:
     required: false
     default: 5
     description: RunPod serverless container disk[GB]
-outputs:
-  api-result:
-    value: ${{ steps.set-outputs.outputs.api-result }}
-    description: RunPod SaveTemplate API response
 runs:
   using: composite
   steps:
@@ -46,8 +42,3 @@ runs:
         --template_id=${{ inputs.template-id }}
         --template_name=${{ inputs.template-name }}
         | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_STEP_SUMMARY}
-    - name: Set API results to action output
-      id: set-outputs
-      shell: bash
-      run: >
-        echo "api-result=${GITHUB_STEP_SUMMARY}" >> ${GITHUB_OUTPUT}

@@ -40,12 +40,12 @@ runs:
       shell: bash
       run: >
         python ${GITHUB_ACTION_PATH}/deploy_serverless.py
-          --api_key=${{ inputs.api-key }}
-          --registry_auth_id=${{ inputs.registry-auth-id }}
-          --image_name=${{ inputs.image-name }}
-          --template_id=${{ inputs.template-id }}
-          --template_name=${{ inputs.template-name }}
-          | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_STEP_SUMMARY}
+        --api_key=${{ inputs.api-key }}
+        --registry_auth_id=${{ inputs.registry-auth-id }}
+        --image_name=${{ inputs.image-name }}
+        --template_id=${{ inputs.template-id }}
+        --template_name=${{ inputs.template-name }}
+        | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_STEP_SUMMARY}
     - name: Set API results to action output
       id: set-outputs
       shell: bash

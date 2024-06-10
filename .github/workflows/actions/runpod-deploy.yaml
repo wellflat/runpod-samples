@@ -1,0 +1,56 @@
+name: Deploy RunPod serverless
+description: |
+  deploy container image to RunPod serverless using RunPod official API
+inputs:
+  api-key:
+    required: true
+    description: RunPod API key
+  registry-auth-id:
+    required: true
+    description: RunPod container registry authentication ID
+  image-name:
+    required: true
+    description: target container image name
+  template-id:
+    required: true
+    description: RunPod serverless template ID
+  template-name:
+    required: true
+    description: RunPod serverless template name
+  container-disk:
+    required: false
+    default: 5
+    description: RunPod serverless container disk[GB]
+outputs:
+  api-result:
+    value:
+    description: ${{ steps.set-outputs.outputs.api-result }}
+runs:
+  using: composite
+  steps:
+    - name: Setup Python environments
+      uses: actions/setup-python@v5
+      with:
+        python-version-file: "pyproject.toml"
+        architecture: 'x64'
+        cache: pip
+    - name: Install dependencies
+      shell: bash
+      run: pip install -r ${GITHUB_ACTION_PATH}/requirements.txt
+    - name: Deploy image to RunPod Serverless
+      shell: bash
+      run: >
+        python ${GITHUB_ACTION_PATH}/deploy_serverless.py
+          --api_key=${{ inputs.api-key }}
+          --registry_auth_id=${{ inputs.registry-auth-id }}
+          --image_name=${{ inputs.image-name }}
+          --template_id=${{ inputs.template_id }}
+          --template_name=${{ inputs.template_name }}
+          | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_OUTPUT}
+    - name: Set output
+      id: set-outputs
+      shell: bash
+      run: >
+        echo "api-result=${GITHUB_STEP_SUMMARY}" >> ${GITHUB_OUTPUT}
+
+

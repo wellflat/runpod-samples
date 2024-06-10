@@ -97,23 +97,38 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Setup Python environments
-        uses: actions/setup-python@v5
+      
+      - name: Deploy image to RunPod serverless
+        uses: ./.github/actions/runpod-deploy/
+        id: deploy
         with:
-          python-version-file: "pyproject.toml"
-          architecture: 'x64'
-          cache: pip
+          api-key: ${{ secrets.RUNPOD_API_KEY }}
+          registry-auth-id: ${{ secrets.REGISTRY_AUTH_ID }}
+          image-name: ${{ needs.build-and-push-image.outputs.image-tags }}
+          template-id: ${{ vars.TEMPLATE_ID }}
+          template-name: ${{ vars.TEMPLATE_NAME }}
+      
+      - name: Check deploy result
+        run: echo ${{ steps.deploy.outputs.api-result }}
 
-      - name: Install dependencies
-        run: pip install -r src/requirements.txt
+      # - name: Setup Python environments
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version-file: "pyproject.toml"
+      #     architecture: 'x64'
+      #     cache: pip
 
-      - name: Deploy image to RunPod Serverless
-        run: >
-          python src/deploy_serverless.py
-          --api_key=${{ secrets.RUNPOD_API_KEY }}
-          --registry_auth_id=${{ secrets.REGISTRY_AUTH_ID }}
-          --image_name=${{ needs.build-and-push-image.outputs.image-tags }}
-          --template_id=${{ vars.TEMPLATE_ID }}
-          --template_name=${{ vars.TEMPLATE_NAME }}
-          | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_STEP_SUMMARY}
+      # - name: Install dependencies
+      #   run: pip install -r src/requirements.txt
+
+      # - name: Deploy image to RunPod Serverless
+      #   run: >
+      #     python src/deploy_serverless.py
+      #     --api_key=${{ secrets.RUNPOD_API_KEY }}
+      #     --registry_auth_id=${{ secrets.REGISTRY_AUTH_ID }}
+      #     --image_name=${{ needs.build-and-push-image.outputs.image-tags }}
+      #     --template_id=${{ vars.TEMPLATE_ID }}
+      #     --template_name=${{ vars.TEMPLATE_NAME }}
+      #     | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_STEP_SUMMARY}
+      
+

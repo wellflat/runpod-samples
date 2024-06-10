@@ -44,9 +44,11 @@ runs:
           --template_name=${{ inputs.template_name }}
           | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_OUTPUT}
       shell: bash
-    - id: set-outputs
-      shell: bash
-      run: >
+    - run: >
         echo "api-result=${GITHUB_STEP_SUMMARY}" >> ${GITHUB_OUTPUT}
+      shell: bash
+      id: set-outputs
+      
+      
 
 

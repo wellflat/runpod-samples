@@ -28,18 +28,14 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Setup Python environments
-      uses: actions/setup-python@v5
+    - uses: actions/setup-python@v5
       with:
         python-version-file: "pyproject.toml"
         architecture: 'x64'
         cache: pip
-    - name: Install dependencies
+    - run: pip install -r ${GITHUB_ACTION_PATH}/requirements.txt
       shell: bash
-      run: pip install -r ${GITHUB_ACTION_PATH}/requirements.txt
-    - name: Deploy image to RunPod Serverless
-      shell: bash
-      run: >
+    - run: >
         python ${GITHUB_ACTION_PATH}/deploy_serverless.py
           --api_key=${{ inputs.api-key }}
           --registry_auth_id=${{ inputs.registry-auth-id }}
@@ -47,8 +43,8 @@ runs:
           --template_id=${{ inputs.template_id }}
           --template_name=${{ inputs.template_name }}
           | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_OUTPUT}
-    - name: Set output
-      id: set-outputs
+      shell: bash
+    - id: set-outputs
       shell: bash
       run: >
         echo "api-result=${GITHUB_STEP_SUMMARY}" >> ${GITHUB_OUTPUT}

@@ -3,8 +3,8 @@
 import argparse
 import asyncio
 import json
-import os
 import sys
+from typing import Any
 
 from gql import Client, gql
 from gql.transport.aiohttp import AIOHTTPTransport
@@ -15,18 +15,35 @@ RunpodResponse = dict[str, dict[str, str]]
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Deploy container to RunPod Serverless")
     parser.add_argument("--api_key", type=str, help="RunPod API key")
-    parser.add_argument("--registry_auth_id", required=True, type=str, help="RunPod registory authentication ID")
     parser.add_argument("--image_name", type=str, required=True, help="Target container image name")
     parser.add_argument("--template_id", type=str, required=True, help="RunPod template ID")
-    parser.add_argument("--template_name", type=str, required=True, help="RunPod template name")
     return parser.parse_args()
 
-async def request_save_template(args: argparse.Namespace) -> RunpodResponse:
-    api_key = args.api_key if args.api_key else os.getenv("RUNPOD_API_KEY")
-    registry_auth_id = args.registry_auth_id
-    image_name = args.image_name
-    template_id = args.template_id
-    template_name = args.template_name
+async def request_get_templates(transport: AIOHTTPTransport) -> dict[str, Any]:
+    async with Client(transport=transport) as session:
+        query = """
+        query getPodTemplates {
+          myself {
+            id
+            podTemplates {
+              containerDiskInGb
+              containerRegistryAuthId
+              env {
+                key
+                value
+              }
+              id
+              imageName
+              name
+              startScript
+              volumeMountPath
+            }
+          }
+        }"""
+
+        return await session.execute(gql(query))
+
+async def request_save_template(transport: AIOHTTPTransport, image_name: str, params: dict[str, Any]) -> RunpodResponse:
     query = """
         mutation saveTemplate($input: SaveTemplateInput) {
             saveTemplate(input: $input) {
@@ -35,31 +52,28 @@ async def request_save_template(args: argparse.Namespace) -> RunpodResponse:
                 name
             }
         }"""
-    transport = AIOHTTPTransport(
-        url=f"https://api.runpod.io/graphql?api_key={api_key}",
-    )
     async with Client(transport=transport) as session:
         variables = {
             "input": {
                 "advancedStart": False,
-                "containerDiskInGb": 5,
-                "containerRegistryAuthId": registry_auth_id,
+                "containerDiskInGb": params["containerDiskInGb"],
+                "containerRegistryAuthId": params["containerRegistryAuthId"],
                 "dockerArgs": "",
-                "env": [{"key": "test-key2", "value": "test-value2"}],
-                "id": template_id,
+                "env": params["env"],
+                "id": params["id"],
                 "imageName": image_name,
                 "isPublic": False,
                 "isServerless": True,
-                "name": template_name,
+                "name": params["name"],
                 "ports": "",
                 "readme": "",
                 "startJupyter": False,
-                "startScript": "",
+                "startScript": params["startScript"],
                 "startSsh": False,
                 "volumeInGb": 0,
-                "volumeMountPath": "/workspace",
+                "volumeMountPath": params["volumeMountPath"],
                 "config": {
-                    "templateId": template_id,
+                    "templateId": params["id"],
                     "category": "GPU",
                 },
             },
@@ -69,10 +83,16 @@ async def request_save_template(args: argparse.Namespace) -> RunpodResponse:
 async def main() -> None:
     try:
         args = parse_args()
-        response = await request_save_template(args)
-        sys.stdout.write(json.dumps(response, indent=2))
+        transport = AIOHTTPTransport(url=f"https://api.runpod.io/graphql?api_key={args.api_key}")
+        templates = await request_get_templates(transport)
+        target_template = list(filter(lambda i : i["id"] == args.template_id, templates["myself"]["podTemplates"]))
+        save_response = await request_save_template(transport, args.image_name, target_template[0])
+        sys.stdout.write(json.dumps(save_response, indent=2))
         sys.exit(0)
     except TransportError as e:
+        sys.stderr.write(str(e))
+        sys.exit(-1)
+    except IndexError as e:
         sys.stderr.write(str(e))
         sys.exit(-1)
 

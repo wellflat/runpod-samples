@@ -1,0 +1,26 @@
+mutation Mutation {
+  deployCpuPod(
+    input: {
+      name: "Ondemand pod for model copy"
+      instanceId: "cpu3g-2-8",
+      cloudType: SECURE,
+      containerDiskInGb: 5,
+      deployCost: 0.11,
+      dataCenterId: "EU-RO-1",
+      networkVolumeId: "d51oxhs2bo",
+      startJupyter: true,
+      startSsh: true,
+      templateId: "runpod-ubuntu",
+      volumeKey: null,
+      ports: "22/tcp"
+    }
+  ) {
+    id
+    imageName
+    env
+    machineId
+    machine {
+      podHostId
+    }
+  }
+}

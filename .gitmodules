@@ -1,0 +1,3 @@
+[submodule "sample-models"]
+	path = sample-models
+	url = https://huggingface.co/wellflat/sample-models

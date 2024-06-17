@@ -103,10 +103,8 @@ jobs:
         id: deploy
         with:
           api-key: ${{ secrets.RUNPOD_API_KEY }}
-          registry-auth-id: ${{ secrets.REGISTRY_AUTH_ID }}
           image-name: ${{ needs.build-and-push-image.outputs.image-tags }}
           template-id: ${{ vars.TEMPLATE_ID }}
-          template-name: ${{ vars.TEMPLATE_NAME }}
 
       # - name: Setup Python environments
       #   uses: actions/setup-python@v5

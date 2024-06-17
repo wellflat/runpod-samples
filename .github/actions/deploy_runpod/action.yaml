@@ -4,22 +4,12 @@ inputs:
   api-key:
     required: true
     description: RunPod API key
-  registry-auth-id:
-    required: true
-    description: RunPod container registry authentication ID
   image-name:
     required: true
     description: target container image name
   template-id:
     required: true
     description: RunPod serverless template ID
-  template-name:
-    required: true
-    description: RunPod serverless template name
-  container-disk:
-    required: false
-    default: 5
-    description: RunPod serverless container disk[GB]
 runs:
   using: composite
   steps:
@@ -37,8 +27,6 @@ runs:
       run: >
         python ${GITHUB_ACTION_PATH}/deploy_serverless.py
         --api_key=${{ inputs.api-key }}
-        --registry_auth_id=${{ inputs.registry-auth-id }}
         --image_name=${{ inputs.image-name }}
         --template_id=${{ inputs.template-id }}
-        --template_name=${{ inputs.template-name }}
         | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_STEP_SUMMARY}

@@ -1,0 +1,9 @@
+query cpuTypes {
+  cpuTypes {
+    id
+    displayName
+    manufacturer
+    cores
+    threadsPerCore
+  }
+}

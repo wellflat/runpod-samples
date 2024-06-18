@@ -63,7 +63,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           #tags: type=raw, value={{date 'YYYYMMDD-hhmmss'}}-{{sha}}
-          tags: type=raw, value={{date 'YYYYMMDD'}}
+          tags: type=raw, value={{date 'YYYYMM'}}
       
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3

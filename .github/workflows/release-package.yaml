@@ -41,13 +41,14 @@ jobs:
           mkdir -p /home/runner/.ssh
           echo "${{ secrets.HF_PRIVATE_KEY}}" > /home/runner/.ssh/id_ed25519
           chmod 600 /home/runner/.ssh/id_ed25519
+          echo -e "Host hf.co\n\tHostName hf.co\n\tUser git\n\tIdentityFile /home/runner/.ssh/id_ed25519\n\tStrictHostKeyChecking no\n" > /home/runner/.ssh/config
       
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
           lfs: false
-          persist-credentials: false
+          persist-credentials: true
 
       - name: Login to the Container registry
         uses: docker/login-action@v2

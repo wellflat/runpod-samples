@@ -1,10 +1,10 @@
 FROM python:3.10-slim
 
-WORKDIR /
+WORKDIR /runner
 RUN pip install --no-cache-dir runpod
-COPY src/rp_handler.py /
-COPY src/test_input.json /
-COPY src/entrypoint.sh /
+COPY src/rp_handler.py .
+COPY src/test_input.json .
+COPY src/entrypoint.sh .
 
 # Set OCI Labels
 LABEL org.opencontainers.image.source=https://github.com/wellflat/runpod-samples

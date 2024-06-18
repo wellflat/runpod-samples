@@ -24,9 +24,6 @@ jobs:
       deploy-env: ${{ env.deploy }}
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
       - name: Generate github token
         id: generate_token
         uses: actions/create-github-app-token@v1
@@ -34,10 +31,22 @@ jobs:
           app-id: ${{ vars.GH_APP_ID }}
           private-key: ${{ secrets.GH_PRIVATE_KEY }}
       
-      - name: Use token
+      - name: Set token
         run: echo "$GITHUB_TOKEN"
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+      
+      - name: Setup SSH Key
+        run: |
+          mkdir -p /home/runner/.ssh
+          echo "${{ secrets.HF_PRIVATE_KEY}}" > /home/runner/.ssh/id_ed25519
+          chmod 600 /home/runner/.ssh/id_ed25519
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          lfs: false
 
       - name: Login to the Container registry
         uses: docker/login-action@v2

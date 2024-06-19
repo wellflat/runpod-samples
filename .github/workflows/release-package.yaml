@@ -21,6 +21,7 @@ jobs:
     
     outputs:
       image-tags: ${{ steps.meta.outputs.tags }}
+      submodule-commit-id: ${{ steps.submodule-id.outputs.id}}
       deploy-env: ${{ env.deploy }}
     
     steps:
@@ -50,8 +51,9 @@ jobs:
           lfs: false
           persist-credentials: false
       
-      - name: Check submodule Commit ID
-        run: git submodule
+      - name: Set submodule Commit ID
+        id: submodule-id
+        run: git submodule status sample-models | cut -c 2-41 | xargs echo "id=" >> ${GITHUB_OUTPUT}
 
       - name: Login to the Container registry
         uses: docker/login-action@v2
@@ -112,6 +114,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Test submodule id
+        run: echo ${{ needs.build-and-push-image.outputs.submodule-commit-id }}
       
       - name: Deploy image to RunPod serverless
         uses: ./.github/actions/deploy_runpod/

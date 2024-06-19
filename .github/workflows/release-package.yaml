@@ -49,6 +49,9 @@ jobs:
           submodules: recursive
           lfs: false
           persist-credentials: false
+      
+      - name: Check submodule Commit ID
+        run: git submodule
 
       - name: Login to the Container registry
         uses: docker/login-action@v2

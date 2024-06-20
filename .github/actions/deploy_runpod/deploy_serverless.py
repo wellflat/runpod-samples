@@ -17,6 +17,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--api_key", type=str, help="RunPod API key")
     parser.add_argument("--image_name", type=str, required=True, help="Target container image name")
     parser.add_argument("--template_id", type=str, required=True, help="RunPod template ID")
+    parser.add_argument("--submodule_commit_id", type=str, required=True, help="Submodule Commit ID")
     return parser.parse_args()
 
 async def request_get_templates(transport: AIOHTTPTransport) -> dict[str, Any]:
@@ -43,7 +44,7 @@ async def request_get_templates(transport: AIOHTTPTransport) -> dict[str, Any]:
 
         return await session.execute(gql(query))
 
-async def request_save_template(transport: AIOHTTPTransport, image_name: str, params: dict[str, Any]) -> RunpodResponse:
+async def request_save_template(transport: AIOHTTPTransport, image_name: str, commit_id: str, params: dict[str, Any]) -> RunpodResponse:
     query = """
         mutation saveTemplate($input: SaveTemplateInput) {
             saveTemplate(input: $input) {
@@ -52,6 +53,7 @@ async def request_save_template(transport: AIOHTTPTransport, image_name: str, pa
                 name
             }
         }"""
+    params["env"].append({"key": "SUBMODULE_COMMIT_ID", "value": commit_id})
     async with Client(transport=transport) as session:
         variables = {
             "input": {
@@ -86,7 +88,7 @@ async def main() -> None:
         transport = AIOHTTPTransport(url=f"https://api.runpod.io/graphql?api_key={args.api_key}")
         templates = await request_get_templates(transport)
         target_template = list(filter(lambda i : i["id"] == args.template_id, templates["myself"]["podTemplates"]))
-        save_response = await request_save_template(transport, args.image_name, target_template[0])
+        save_response = await request_save_template(transport, args.image_name, args.commit_id, target_template[0])
         sys.stdout.write(json.dumps(save_response, indent=2))
         sys.exit(0)
     except TransportError as e:

@@ -114,9 +114,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Test submodule id
-        run: echo ${{ needs.build-and-push-image.outputs.submodule-commit-id }}
       
       - name: Deploy image to RunPod serverless
         uses: ./.github/actions/deploy_runpod/
@@ -124,6 +121,7 @@ jobs:
         with:
           api-key: ${{ secrets.RUNPOD_API_KEY }}
           image-name: ${{ needs.build-and-push-image.outputs.image-tags }}
+          submodule-commit-id: ${{ needs.build-and-push-image.outputs.submodule-commit-id }}
           template-id: ${{ vars.TEMPLATE_ID }}
 
       # - name: Setup Python environments

@@ -9,11 +9,12 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 runpod = "^1.6.2"
-gql = {extras = ["all"], version = "^3.5.0"}
+huggingface-hub = {extras = ["cli"], version = "^0.23.4"}
+hf-transfer = "^0.1.6"
+gql = {extras = ["aiohttp"], version = "^3.5.0"}
 
 
 [tool.poetry.group.dev.dependencies]
-runpod = "^1.6.2"
 ruff = "^0.4.1"
 
 [tool.ruff]

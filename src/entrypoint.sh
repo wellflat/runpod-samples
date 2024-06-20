@@ -13,6 +13,6 @@
 export HF_HUB_ENABLE_HF_TRANSFER=1
 huggingface-cli download \
     --token ${HF_TOKEN} \
-    --revision ${SUMODULE_COMMIT_ID}
+    --revision ${SUBODULE_COMMIT_ID}
 echo "start handler"
 python3 -u rp_handler.py

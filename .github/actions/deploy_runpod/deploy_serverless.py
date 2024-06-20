@@ -88,7 +88,7 @@ async def main() -> None:
         transport = AIOHTTPTransport(url=f"https://api.runpod.io/graphql?api_key={args.api_key}")
         templates = await request_get_templates(transport)
         target_template = list(filter(lambda i : i["id"] == args.template_id, templates["myself"]["podTemplates"]))
-        save_response = await request_save_template(transport, args.image_name, args.commit_id, target_template[0])
+        save_response = await request_save_template(transport, args.image_name, args.submodule_commit_id, target_template[0])
         sys.stdout.write(json.dumps(save_response, indent=2))
         sys.exit(0)
     except TransportError as e:

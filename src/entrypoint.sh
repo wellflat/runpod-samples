@@ -8,5 +8,6 @@ echo "clone completed"
 cd sample-models
 git checkout "${SUBMODULE_COMMIT_ID}"
 ls models
+cd -
 echo "start handler"
 python3 -u rp_handler.py

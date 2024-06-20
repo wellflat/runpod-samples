@@ -11,7 +11,9 @@
 #cd -
 
 export HF_HUB_ENABLE_HF_TRANSFER=1
+REPO_ID=wellflat/sample-models
 huggingface-cli download \
+    ${REPO_ID} \
     --token ${HF_TOKEN} \
     --revision ${SUBMODULE_COMMIT_ID}
 echo "start handler"

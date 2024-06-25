@@ -21,7 +21,6 @@ jobs:
     
     outputs:
       image-tags: ${{ steps.meta.outputs.tags }}
-      submodule-commit-id: ${{ steps.submodule-id.outputs.id}}
       deploy-env: ${{ env.deploy }}
     
     steps:
@@ -50,10 +49,6 @@ jobs:
           submodules: recursive
           lfs: false
           persist-credentials: false
-      
-      - name: Set submodule Commit ID
-        id: submodule-id
-        run: git submodule status sample-models | cut -c 2-41 | xargs echo "id=" >> ${GITHUB_OUTPUT}
 
       - name: Login to the Container registry
         uses: docker/login-action@v2
@@ -125,7 +120,6 @@ jobs:
         with:
           api-key: ${{ secrets.RUNPOD_API_KEY }}
           image-name: ${{ needs.build-and-push-image.outputs.image-tags }}
-          submodule-commit-id: ${{ needs.build-and-push-image.outputs.submodule-commit-id }}
           template-id: ${{ vars.TEMPLATE_ID }}
 
       # - name: Setup Python environments

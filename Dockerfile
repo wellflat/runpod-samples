@@ -15,7 +15,7 @@ RUN --mount=type=secret,id=github_token \
     GH_TOKEN=$(cat /run/secrets/github_token) && \
     git clone -b ${BRANCH} https://wellflat:${GH_TOKEN}@github.com/wellflat/runpod-samples && \
     cd runpod-samples && \
-    git submodule | cut -d' ' -f1,2 | sed 's/ /,/g' > /build/submodule_list.csv
+    git submodule | cut -c 2- | cut -d' ' -f1,2 --output-delimiter="," > /build/submodule_list.csv
 
 # Multi-stage build, package phase
 FROM python:3.10-slim

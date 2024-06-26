@@ -1,5 +1,5 @@
 # Multi-stage build, build phase
-FROM python:3.10 as builder
+FROM python:3.10 AS builder
 
 RUN apt-get update && \
     apt-get install -y git && \

@@ -10,9 +10,6 @@ inputs:
   template-id:
     required: true
     description: RunPod serverless template ID
-  submodule-commit-id:
-    required: true
-    description: target submodule commit ID
 runs:
   using: composite
   steps:
@@ -32,5 +29,4 @@ runs:
         --api_key=${{ inputs.api-key }}
         --image_name=${{ inputs.image-name }}
         --template_id=${{ inputs.template-id }}
-        --submodule_commit_id="${{ inputs.submodule-commit-id }}"
         | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_STEP_SUMMARY}

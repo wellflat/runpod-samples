@@ -1,0 +1,45 @@
+mutation {
+  saveTemplate(
+    input: {
+      advancedStart: false
+      containerDiskInGb: 5
+      containerRegistryAuthId: "clutj6gj60001l7062275rxfi"
+      dockerArgs: ""
+      env: []
+      id: "48l430fsrb"
+      imageName: "ghcr.io/wellflat/runpod-samples:latest"
+      isPublic: false
+      isServerless: true
+      name: "from_ghcr"
+      ports: ""
+      readme: ""
+      startJupyter: true
+      startScript: ""
+      startSsh: true
+      volumeInGb: 0
+      volumeMountPath: "/workspace"
+      config: {
+        templateId: "48l430fsrb",
+        category: "GPU"
+      }
+    }
+  ) {
+      advancedStart
+      containerDiskInGb
+      dockerArgs
+      env {
+        key
+        value
+      }
+      id
+      imageName
+      name
+      ports
+      readme
+      startJupyter
+      startScript
+      startSsh
+      volumeInGb
+      volumeMountPath
+  }
+}

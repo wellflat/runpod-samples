@@ -1,0 +1,11 @@
+query($number_of_repos:Int = 3) {
+  viewer {
+    name
+    repositories(first: $number_of_repos) {
+      nodes {
+        id
+        name
+      }
+    }
+  }
+}

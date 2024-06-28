@@ -6,7 +6,7 @@ import os
 
 from aiohttp import ClientSession
 
-VERSIONS = list[tuple[int, str, str]]
+VERSIONS = list[tuple[int, str, list[str], str]]
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Manage GitHub Packages")
@@ -24,15 +24,16 @@ async def get_package_versions(session: ClientSession, name: str, headers: dict)
 async def delete_package_versions(session: ClientSession, name: str, versions: VERSIONS, headers: dict) -> None:
     base_url = f"https://api.github.com/user/packages/container/{name}/versions"
     for version in versions:
-        if "sha256:" in version[1]:
-            url = f"{base_url}/{version[0]}"
-            print(f"version name: {version[1]}")
-            async with session.delete(url, headers=headers) as response:
-                print(f"status: {response.status}")
-                await asyncio.sleep(1)
+        # tag無しは無条件削除
+        if len(version[2]) == 0:  # sha256:~
+             url = f"{base_url}/{version[0]}"
+             print(f"version name: {version[1]}, created_at: {version[3]}")
+             async with session.delete(url, headers=headers) as response:
+                 print(f"status: {response.status}")
+                 await asyncio.sleep(1)
         else:
-            # tagではなくversionなのでsha256:~以外のパターンは無い?
-            print(version[1])
+             # tag付きのバージョン, TODO: 日付を見て古いものから削除
+             print(version[1])
 
 async def main() -> None:
     args = parse_args()
@@ -45,8 +46,9 @@ async def main() -> None:
     package_name = args.name
     async with ClientSession() as session:
         result = await get_package_versions(session, package_name, headers)
-        versions = [(i["id"], i["name"], i["created_at"]) for i in result]
-        print(f"{len(versions)} versions exists.")
-        await delete_package_versions(session, package_name, versions, headers)
+        print(f"{len(result)} versions exists.")
+        if len(result) > 0:
+            versions = [(i["id"], i["name"], i["metadata"]["container"]["tags"], i["created_at"]) for i in result]
+            await delete_package_versions(session, package_name, versions, headers)
 
 asyncio.run(main())

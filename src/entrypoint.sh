@@ -1,4 +1,5 @@
 #!/bin/sh
+# 2024/07/02
 
 export HF_HUB_ENABLE_HF_TRANSFER=1
 USER=wellflat

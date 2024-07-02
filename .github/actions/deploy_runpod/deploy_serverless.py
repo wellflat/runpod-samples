@@ -35,6 +35,7 @@ async def request_get_templates(transport: AIOHTTPTransport) -> dict[str, Any]:
               id
               imageName
               name
+              dockerArgs
               startScript
               volumeMountPath
             }
@@ -58,7 +59,7 @@ async def request_save_template(transport: AIOHTTPTransport, image_name: str, pa
                 "advancedStart": False,
                 "containerDiskInGb": params["containerDiskInGb"],
                 "containerRegistryAuthId": params["containerRegistryAuthId"],
-                "dockerArgs": "",
+                "dockerArgs": params["dockerArgs"],
                 "env": params["env"],
                 "id": params["id"],
                 "imageName": image_name,

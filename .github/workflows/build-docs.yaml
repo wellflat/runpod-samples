@@ -28,7 +28,7 @@ jobs:
       - name: Run Redocly CLI
         run: npx -y @redocly/cli@latest build-docs docs/openapi.yaml -o api.html
       - name: Upload API docs as artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: api-specs-html
           path: api.html

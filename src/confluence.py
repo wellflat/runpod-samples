@@ -9,20 +9,20 @@ from atlassian import Confluence
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Upload API document to Confluence")
-    parser.add_argument("--url", type=str, help="Confluence Base URL")
+    parser.add_argument("--url", type=str, required=True, help="Confluence Base URL")
     parser.add_argument("--user", type=str, required=True, help="Confluence username")
     parser.add_argument("--token", type=str, required=True, help="Confluence API token")
+    parser.add_argument("--file", type=str, default="api.html", help="API document file")
+    parser.add_argument("--page", type=int, default=3054567551, help="Confluence page ID")
     return parser.parse_args()
 
-def upload_document(url: str, user: str, token: str) -> None:
+def upload_document(filename: str, page_id: int, url: str, user: str, token: str) -> None:
     confluence = Confluence(
         url=url,
         username=user,
         password=token,
         api_root="/wiki/api/v2/",
     )
-    filename = "api.html"
-    page_id = 3054567551
     ret = confluence.attach_file(
         filename,
         name="API外部仕様書.html",
@@ -38,6 +38,6 @@ if __name__ == "__main__":
     CONFLUENCE_TOKEN = os.getenv("CONFLUENCE_TOKEN")
 
     args = parse_args()
-    upload_document(args.url, args.user, args.token)
+    upload_document(args.file, args.page, args.url, args.user, args.token)
 
 

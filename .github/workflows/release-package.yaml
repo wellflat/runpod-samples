@@ -2,7 +2,7 @@ name: create and publish a docker image
 
 on:
   push:
-    branches: ['develop']
+    branches: ['main']
   pull_request:
     branches: ['main']
     types: [closed]

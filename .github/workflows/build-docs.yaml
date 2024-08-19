@@ -19,7 +19,9 @@ jobs:
       - name: Checkout API spec file
         uses: actions/checkout@v4
         with:
-          sparse-checkout: docs/openapi.yaml
+          sparse-checkout: |
+            docs/openapi.yaml
+            pyproject.toml
           sparse-checkout-cone-mode: false
       - name: Setup Node.js environments
         uses: actions/setup-node@v4

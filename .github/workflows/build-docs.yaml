@@ -22,6 +22,7 @@ jobs:
           sparse-checkout: |
             docs/openapi.yaml
             pyproject.toml
+            src/confluence.py
           sparse-checkout-cone-mode: false
       - name: Setup Node.js environments
         uses: actions/setup-node@v4
@@ -43,4 +44,8 @@ jobs:
       - name: Install Python dependencies
         run: pip install atlassian-python-api
       - name: Upload API document to Confluence
-        run: ls -l
+        run: |
+          python src/confluence.py
+          --url ${{ vars.CONFLUENCE_URL }}
+          --user ${{ vars.CONFLUENCE_USER }}
+          --token ${{ secrets.CONFLUENCE_TOKEN }}

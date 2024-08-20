@@ -44,4 +44,4 @@ jobs:
           --url ${{ vars.CONFLUENCE_URL }}
           --user ${{ secrets.CONFLUENCE_USER }}
           --token ${{ secrets.CONFLUENCE_TOKEN }}
-          --page ${{ vars.CONFLUENCE_PAGE }}
+          --page ${{ vars.CONFLUENCE_PAGE_ID }}

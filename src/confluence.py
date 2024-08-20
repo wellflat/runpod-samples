@@ -32,7 +32,7 @@ def upload_document(filename: str, page_id: int, url: str, user: str, token: str
         comment=comment,
     )
     if isinstance(response, dict):
-        attached_url = f'{response["_links"]["base"]}{response["results"][0]["_links"]["webui"]}'
+        attached_url = f'{response["_links"]["base"]}{response["_links"]["webui"]}'
         print(attached_url)
 
     #results = json.dumps(raw_results, indent=2)

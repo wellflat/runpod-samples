@@ -12,11 +12,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--url", type=str, required=True, help="Confluence Base URL")
     parser.add_argument("--user", type=str, required=True, help="Confluence username")
     parser.add_argument("--token", type=str, required=True, help="Confluence API token")
-    parser.add_argument("--file", type=str, default="api.html", help="API document file")
-    parser.add_argument("--page", type=int, default=3054567551, help="Confluence page ID")
+    parser.add_argument("--page", type=int, required=True, help="Confluence page ID")
+    parser.add_argument("--name", type=str, default="openapi.html", help="API document filename")
+    parser.add_argument("--comment", type=str, help="Comment for attachment")
     return parser.parse_args()
 
-def upload_document(filename: str, page_id: int, url: str, user: str, token: str) -> None:
+def upload_document(filename: str, page_id: int, url: str, user: str, token: str, comment: str) -> None:
     confluence = Confluence(
         url=url,
         username=user,
@@ -25,10 +26,10 @@ def upload_document(filename: str, page_id: int, url: str, user: str, token: str
     )
     ret = confluence.attach_file(
         filename,
-        name="API外部仕様書.html",
+        name=filename,
         content_type="text/html",
         page_id=page_id,
-        comment="ex) 2024/08/07 version 0.0.1"
+        comment=comment,
     )
     print(json.dumps(ret, indent=2))
 
@@ -38,6 +39,5 @@ if __name__ == "__main__":
     CONFLUENCE_TOKEN = os.getenv("CONFLUENCE_TOKEN")
 
     args = parse_args()
-    upload_document(args.file, args.page, args.url, args.user, args.token)
-
+    upload_document(args.name, args.page, args.url, args.user, args.token, args.comment)
 

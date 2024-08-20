@@ -29,12 +29,7 @@ jobs:
         with:
           node-version: 20
       - name: Build API document by Redocly CLI
-        run: npx -y @redocly/cli@latest build-docs docs/openapi.yaml -o api.html
-      - name: Upload API docs as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-specs-html
-          path: api.html
+        run: npx -y @redocly/cli@latest build-docs docs/openapi.yaml -o openapi.html
       - name: Setup Python environments
         uses: actions/setup-python@v5
         with:
@@ -47,5 +42,6 @@ jobs:
         run: >
           python src/confluence.py
           --url ${{ vars.CONFLUENCE_URL }}
-          --user ${{ vars.CONFLUENCE_USER }}
+          --user ${{ secrets.CONFLUENCE_USER }}
           --token ${{ secrets.CONFLUENCE_TOKEN }}
+          --page ${{ vars.CONFLUENCE_PAGE }}

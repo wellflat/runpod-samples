@@ -46,6 +46,6 @@ jobs:
       - name: Upload API document to Confluence
         run: >
           python src/confluence.py
-            --url ${{ vars.CONFLUENCE_URL }}
-            --user ${{ vars.CONFLUENCE_USER }}
-            --token ${{ secrets.CONFLUENCE_TOKEN }}
+          --url ${{ vars.CONFLUENCE_URL }}
+          --user ${{ vars.CONFLUENCE_USER }}
+          --token ${{ secrets.CONFLUENCE_TOKEN }}

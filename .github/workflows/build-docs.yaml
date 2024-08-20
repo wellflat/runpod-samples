@@ -44,8 +44,8 @@ jobs:
       - name: Install Python dependencies
         run: pip install atlassian-python-api
       - name: Upload API document to Confluence
-        run: |
+        run: >
           python src/confluence.py
-          --url ${{ vars.CONFLUENCE_URL }}
-          --user ${{ vars.CONFLUENCE_USER }}
-          --token ${{ secrets.CONFLUENCE_TOKEN }}
+            --url ${{ vars.CONFLUENCE_URL }}
+            --user ${{ vars.CONFLUENCE_USER }}
+            --token ${{ secrets.CONFLUENCE_TOKEN }}

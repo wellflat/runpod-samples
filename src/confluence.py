@@ -24,14 +24,18 @@ def upload_document(filename: str, page_id: int, url: str, user: str, token: str
         password=token,
         api_root="/wiki/api/v2/",
     )
-    ret = confluence.attach_file(
+    response = confluence.attach_file(
         filename,
         name=filename,
         content_type="text/html",
         page_id=page_id,
         comment=comment,
     )
-    print(json.dumps(ret, indent=2))
+    if isinstance(response, dict):
+        attached_url = f'{response["_links"]["base"]}{response["results"][0]["_links"]["webui"]}'
+        print(attached_url)
+
+    #results = json.dumps(raw_results, indent=2)
 
 if __name__ == "__main__":
     CONFLUENCE_URL = os.getenv("CONFLUENCE_URL")

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ENDPOINT_ID=4b7i63j9w7witl
+ENDPOINT_ID=yra3ok1uioei67
 
 curl --request POST \
      --url https://api.runpod.ai/v2/${ENDPOINT_ID}/runsync \

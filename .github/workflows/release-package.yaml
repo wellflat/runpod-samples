@@ -2,7 +2,7 @@ name: create and publish a docker image
 
 on:
   push:
-    branches: ['develop']
+    branches: ['main']
   pull_request:
     branches: ['main']
     types: [closed]
@@ -24,9 +24,6 @@ jobs:
       deploy-env: ${{ env.deploy }}
     
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
       - name: Generate github token
         id: generate_token
         uses: actions/create-github-app-token@v1
@@ -34,10 +31,24 @@ jobs:
           app-id: ${{ vars.GH_APP_ID }}
           private-key: ${{ secrets.GH_PRIVATE_KEY }}
       
-      - name: Use token
+      - name: Set token
         run: echo "$GITHUB_TOKEN"
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+      
+      - name: Setup SSH Key
+        run: |
+          mkdir -p /home/runner/.ssh
+          echo "${{ secrets.HF_PRIVATE_KEY}}" > /home/runner/.ssh/id_ed25519
+          chmod 600 /home/runner/.ssh/id_ed25519
+          echo -e "Host hf.co\n\tHostName hf.co\n\tUser git\n\tIdentityFile /home/runner/.ssh/id_ed25519\n\tStrictHostKeyChecking no\n" > /home/runner/.ssh/config
+      
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          lfs: false
+          persist-credentials: false
 
       - name: Login to the Container registry
         uses: docker/login-action@v2
@@ -52,7 +63,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: type=raw, value={{date 'YYYYMMDD-hhmmss'}}-{{sha}}
+          #tags: type=raw, value={{date 'YYYYMMDD-hhmmss'}}-{{sha}}
+          tags: type=raw, value={{date 'YYYYMMDD-hhmmss'}}
       
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -72,12 +84,16 @@ jobs:
           
       - name: Build and push Docker image
         id: push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            BRANCH=${{ github.ref_name }}
+          secrets: |
+            github_token=${{ secrets.GITHUB_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
       

@@ -1,7 +1,8 @@
 #!/bin/sh
 
-docker build -t runpod-samples:latest \
+IMAGE=runpod-samples:latest
+docker build -t ${IMAGE} \
     --secret id=github_token,env=GH_TOKEN \
-    --build-arg BRANCH=develop .
+    --build-arg BRANCH=develop --no-cache .
 
 # docker run -it --rm runpod-samples /bin/bash

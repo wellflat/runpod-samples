@@ -28,7 +28,7 @@ RUN apt-get update && \
 WORKDIR /runner
 COPY --from=builder /build/requirements.txt /build/submodule_list.csv .
 RUN pip install -r requirements.txt
-COPY ./src/rp_handler.py ./src/test_input.json ./src/entrypoint.sh .
+COPY ./src/rp_handler.py ./src/test_input.json ./src/entrypoint.sh ./src/send_metrics.py .
 
 # Set OCI Labels
 LABEL org.opencontainers.image.source=https://github.com/wellflat/runpod-samples

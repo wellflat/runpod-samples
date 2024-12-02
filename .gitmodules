@@ -1,3 +1,0 @@
-[submodule "sample-models"]
-	path = sample-models
-	url = git@hf.co:wellflat/sample-models

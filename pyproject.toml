@@ -13,7 +13,7 @@ huggingface-hub = {extras = ["cli"], version = "^0.23.4"}
 hf-transfer = "^0.1.6"
 gql = {extras = ["aiohttp"], version = "^3.5.0"}
 atlassian-python-api = "^3.41.14"
-sentry-sdk = "^2.17.0"
+sentry-sdk = "^1.45.1"
 nvidia-ml-py = "^12.560.30"
 
 

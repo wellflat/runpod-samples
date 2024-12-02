@@ -17,6 +17,6 @@ def handler(event: dict[str, dict[str, Any]]) -> dict[str, str]:
     return process_input(event["input"])
 
 if __name__ == "__main__":
-    print("pseudo initialzing serverless (sleep 10s)")
-    time.sleep(10)
+    print("pseudo initialzing serverless (sleep 5s)")
+    time.sleep(5)
     runpod.serverless.start({"handler": handler})

@@ -36,13 +36,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
       
-      - name: Setup SSH Key
-        run: |
-          mkdir -p /home/runner/.ssh
-          echo "${{ secrets.HF_PRIVATE_KEY}}" > /home/runner/.ssh/id_ed25519
-          chmod 600 /home/runner/.ssh/id_ed25519
-          echo -e "Host hf.co\n\tHostName hf.co\n\tUser git\n\tIdentityFile /home/runner/.ssh/id_ed25519\n\tStrictHostKeyChecking no\n" > /home/runner/.ssh/config
-      
       - name: Checkout repository
         uses: actions/checkout@v4
         with:

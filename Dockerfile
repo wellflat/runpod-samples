@@ -1,24 +1,17 @@
 # Multi-stage build, build phase
-FROM python:3.10 AS builder
+FROM python:3.12 AS builder
 
 RUN apt-get update && \
     apt-get install -y git && \
     rm -rf /var/lib/apt/lists/*
-RUN pip install --upgrade pip && pip install poetry
+## install uv
+RUN pip install --upgrade pip && pip install uv
 WORKDIR /build
-COPY pyproject.toml poetry.lock .
-RUN poetry config virtualenvs.create false && \
-    poetry config warnings.export false && \
-    poetry export --without-hashes -f requirements.txt > requirements.txt
-ARG BRANCH
-RUN --mount=type=secret,id=github_token \
-    GH_TOKEN=$(cat /run/secrets/github_token) && \
-    git clone -b ${BRANCH} https://wellflat:${GH_TOKEN}@github.com/wellflat/runpod-samples && \
-    cd runpod-samples && \
-    git submodule | cut -c 2- | cut -d' ' -f1,2 --output-delimiter="," > /build/submodule_list.csv
+COPY pyproject.toml uv.lock .
+RUN uv pip compile pyproject.toml -o requirements.txt
 
 # Multi-stage build, package phase
-FROM python:3.10-slim
+FROM python:3.12-slim
 ENV PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     TZ=Asia/Tokyo
@@ -26,7 +19,7 @@ RUN apt-get update && \
     apt-get install -y git git-lfs && \
     rm -rf /var/lib/apt/lists/*
 WORKDIR /runner
-COPY --from=builder /build/requirements.txt /build/submodule_list.csv .
+COPY --from=builder /build/requirements.txt .
 RUN pip install -r requirements.txt
 COPY ./src/rp_handler.py ./src/test_input.json ./src/entrypoint.sh ./src/send_metrics.py .
 

@@ -1,1 +1,0 @@
-../.github/actions/deploy_runpod/deploy_serverless.py

@@ -1217,7 +1217,7 @@ dependencies = [
     { name = "huggingface-hub" },
     { name = "nvidia-ml-py" },
     { name = "runpod" },
-    { name = "sentry-sdk", extra = ["loguru"] },
+    { name = "sentry-sdk", extra = ["fastapi", "loguru"] },
 ]
 
 [package.metadata]
@@ -1227,7 +1227,7 @@ requires-dist = [
     { name = "huggingface-hub", specifier = ">=0.26.3" },
     { name = "nvidia-ml-py", specifier = ">=12.560.30" },
     { name = "runpod", specifier = ">=1.7.5" },
-    { name = "sentry-sdk", extras = ["loguru"], specifier = "~=1.45.1" },
+    { name = "sentry-sdk", extras = ["fastapi", "loguru"], specifier = "~=1.45.1" },
 ]
 
 [[package]]
@@ -1256,6 +1256,9 @@ wheels = [
 ]
 
 [package.optional-dependencies]
+fastapi = [
+    { name = "fastapi" },
+]
 loguru = [
     { name = "loguru" },
 ]

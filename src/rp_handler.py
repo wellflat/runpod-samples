@@ -7,7 +7,7 @@ from typing import Any
 import runpod
 import sentry_sdk
 from sentry_sdk.integrations.loguru import LoguruIntegration
-
+from loguru import logger
 
 def process_input(input_data: dict[str, str]) -> dict[str, str]:
     name = input_data["name"]
@@ -17,7 +17,7 @@ def process_input(input_data: dict[str, str]) -> dict[str, str]:
 
 ### RunPod Handler
 def handler(event: dict[str, dict[str, Any]]) -> dict[str, str]:
-    print(event)
+    logger.info(event)
     return process_input(event["input"])
 
 if __name__ == "__main__":

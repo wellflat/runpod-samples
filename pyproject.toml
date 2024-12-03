@@ -10,5 +10,5 @@ dependencies = [
     "huggingface-hub>=0.26.3",
     "nvidia-ml-py>=12.560.30",
     "runpod>=1.7.5",
-    "sentry-sdk[loguru]~=1.45.1",
+    "sentry-sdk[fastapi,loguru]~=1.45.1",
 ]

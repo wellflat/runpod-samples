@@ -11,9 +11,11 @@ from sentry_sdk.integrations.serverless import serverless_function
 from loguru import logger
 
 def process_input(input_data: dict[str, str]) -> dict[str, str]:
+    transaction = sentry_sdk.start_transaction(name="process_input", op="process_input")
     name = input_data["name"]
     greeting = f"hello, {name}"
     time.sleep(1)
+    transaction.finish()
     return { "greeting": greeting }
 
 ### RunPod Handler

@@ -15,6 +15,7 @@ def process_input(input_data: dict[str, str]) -> dict[str, str]:
     name = input_data["name"]
     greeting = f"hello, {name}"
     time.sleep(1)
+    e = 1 / 0 # ZeroDivisionError
     transaction.finish()
     return { "greeting": greeting }
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import hashlib
 import os
 import time
 from typing import Any
@@ -16,12 +17,15 @@ def process_input(input_data: dict[str, str]) -> dict[str, str]:
     name = input_data["name"]
     greeting = f"hello, {name}"
     span.finish()
-    span = transaction.start_child(op="calculate_fibonacci", name="calculate_fibonacci")
     number = int(input_data["number"])
+    span = transaction.start_child(op="calculate_fibonacci", name=f"calculate_fibonacci({number})")
     fibonacci_result = calculate_fibonacci(number)
     span.finish()
+    span = transaction.start_child(op="hash", name=f"hashsha256({number})")
+    digest = hashlib.sha256(f"{greeting}-{fibonacci_result}".encode()).hexdigest()
+    span.finish()
     transaction.finish()
-    return { "greeting": greeting, "fibonacci": str(fibonacci_result) }
+    return { "greeting": greeting, "fibonacci": str(fibonacci_result), "digest": digest }
 
 def calculate_fibonacci(n: int) -> int:
     if n <= 1:
@@ -52,5 +56,6 @@ if __name__ == "__main__":
         },
     )
     runpod.serverless.start({"handler": handler})
+    
     
 

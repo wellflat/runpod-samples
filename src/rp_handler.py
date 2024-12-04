@@ -36,7 +36,6 @@ def handler(event: dict[str, dict[str, Any]]) -> dict[str, str]:
 if __name__ == "__main__":
     print("pseudo initialzing serverless (sleep 5s)")
     time.sleep(5)
-    runpod.serverless.start({"handler": handler})
     sentry_sdk.init(
         dsn=os.getenv("SENTRY_DSN"),
         integrations=[LoguruIntegration()],
@@ -46,4 +45,6 @@ if __name__ == "__main__":
         # We recommend adjusting this value in production.
         profiles_sample_rate=1.0
     )
+    runpod.serverless.start({"handler": handler})
+    
 

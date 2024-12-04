@@ -1,5 +1,6 @@
 {
     "input": {
-        "name": "wellflat"
+        "name": "wellflat",
+        "number": 30
     }
 }

@@ -11,13 +11,20 @@ from sentry_sdk.integrations.serverless import serverless_function
 from loguru import logger
 
 def process_input(input_data: dict[str, str]) -> dict[str, str]:
-    transaction = sentry_sdk.start_transaction(name="process_input", op="process_input")
+    transaction = sentry_sdk.start_transaction(op="process_input", name="process_input(transaction)")
+    span = transaction.start_child(op="process_input", name="process_input(span)")
     name = input_data["name"]
     greeting = f"hello, {name}"
-    time.sleep(1)
-    e = 1 / 0 # ZeroDivisionError
+    number = int(input_data["number"])
+    fibonacci_result = calculate_fibonacci(number)
+    span.finish()
     transaction.finish()
-    return { "greeting": greeting }
+    return { "greeting": greeting, "fibonacci": str(fibonacci_result) }
+
+def calculate_fibonacci(n: int) -> int:
+    if n <= 1:
+        return n
+    return calculate_fibonacci(n - 1) + calculate_fibonacci(n - 2)
 
 ### RunPod Handler
 @serverless_function

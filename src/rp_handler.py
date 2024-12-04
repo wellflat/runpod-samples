@@ -17,6 +17,7 @@ def process_input(input_data: dict[str, str]) -> dict[str, str]:
     greeting = f"hello, {name}"
     number = int(input_data["number"])
     fibonacci_result = calculate_fibonacci(number)
+    sentry_sdk.capture_event({"message": f"process_input completed: {greeting}, {fibonacci_result}"})
     span.finish()
     transaction.finish()
     return { "greeting": greeting, "fibonacci": str(fibonacci_result) }
@@ -45,3 +46,4 @@ if __name__ == "__main__":
         # We recommend adjusting this value in production.
         profiles_sample_rate=1.0
     )
+

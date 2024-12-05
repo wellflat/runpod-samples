@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ENDPOINT_ID=yra3ok1uioei67
+ENDPOINT_ID=hv6vxmb8var5us
 INTERVAL=5
 
 

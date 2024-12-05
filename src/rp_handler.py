@@ -13,12 +13,12 @@ from loguru import logger
 
 def process_input(input_data: dict[str, str]) -> dict[str, str]:
     transaction = sentry_sdk.start_transaction(op="process_input", name="process_input(transaction)")
-    span = transaction.start_child(op="greeting", description="greeting")
+    span = transaction.start_child(op="greeting", name="greeting")
     name = input_data["name"]
     greeting = f"hello, {name}"
     span.finish()
     number = int(input_data["number"])
-    span = transaction.start_child(op="calculate_fibonacci", description=f"calculate_fibonacci({number})")
+    span = transaction.start_child(op="calculate_fibonacci", name=f"calculate_fibonacci({number})")
     fibonacci_result = calculate_fibonacci(number)
     span.finish()
     span = transaction.start_child(op="hash", description=f"hashsha256({number})")
@@ -49,11 +49,7 @@ if __name__ == "__main__":
         traces_sample_rate=1.0,
         # Set profiles_sample_rate to 1.0 to profile 100% of sampled transactions.
         # We recommend adjusting this value in production.
-        profiles_sample_rate=1.0,
-        _experiments={
-        # Set continuous_profiling_auto_start to True to automatically start the profiler on when possible.
-            "continuous_profiling_auto_start": True,
-        },
+        profiles_sample_rate=1.0
     )
     runpod.serverless.start({"handler": handler})
     

@@ -13,15 +13,15 @@ from loguru import logger
 
 def process_input(input_data: dict[str, str]) -> dict[str, str]:
     transaction = sentry_sdk.start_transaction(op="process_input", name="process_input(transaction)")
-    span = transaction.start_child(op="greeting", name="greeting")
+    span = transaction.start_child(op="greeting", description="greeting")
     name = input_data["name"]
     greeting = f"hello, {name}"
     span.finish()
     number = int(input_data["number"])
-    span = transaction.start_child(op="calculate_fibonacci", name=f"calculate_fibonacci({number})")
+    span = transaction.start_child(op="calculate_fibonacci", description=f"calculate_fibonacci({number})")
     fibonacci_result = calculate_fibonacci(number)
     span.finish()
-    span = transaction.start_child(op="hash", name=f"hashsha256({number})")
+    span = transaction.start_child(op="hash", description=f"hashsha256({number})")
     digest = hashlib.sha256(f"{greeting}-{fibonacci_result}".encode()).hexdigest()
     span.finish()
     transaction.finish()

@@ -114,25 +114,15 @@ jobs:
           api-key: ${{ secrets.RUNPOD_API_KEY }}
           image-name: ${{ needs.build-and-push-image.outputs.image-tags }}
           template-id: ${{ vars.TEMPLATE_ID }}
-
-      # - name: Setup Python environments
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version-file: "pyproject.toml"
-      #     architecture: 'x64'
-      #     cache: pip
-
-      # - name: Install dependencies
-      #   run: pip install -r src/requirements.txt
-
-      # - name: Deploy image to RunPod Serverless
-      #   run: >
-      #     python src/deploy_serverless.py
-      #     --api_key=${{ secrets.RUNPOD_API_KEY }}
-      #     --registry_auth_id=${{ secrets.REGISTRY_AUTH_ID }}
-      #     --image_name=${{ needs.build-and-push-image.outputs.image-tags }}
-      #     --template_id=${{ vars.TEMPLATE_ID }}
-      #     --template_name=${{ vars.TEMPLATE_NAME }}
-      #     | jq -r '.saveTemplate | to_entries[] | "- " + .key + ": " + (.value | tostring)' >> ${GITHUB_STEP_SUMMARY}
+      
+      - name: Set Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: wellflat
+          SENTRY_PROJECT: runpod-samples
+        with:
+          environment: ${{ needs.build-and-push-image.outputs.deploy-env }}
+          version: ${{ needs.build-and-push-image.outputs.image-tags }}
       
 

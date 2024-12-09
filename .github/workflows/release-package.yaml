@@ -75,7 +75,7 @@ jobs:
             echo "set production environment"
             echo "deploy=prod" >> $GITHUB_ENV
           fi
-          echo "release={{date 'YYYYMMDD'}}" >> $GITHUB_ENV
+          echo "release=${{date 'YYYYMMDD'}}" >> $GITHUB_ENV
           
       - name: Build and push Docker image
         id: push

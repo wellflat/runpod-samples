@@ -43,8 +43,8 @@ def handler(event: dict[str, dict[str, Any]]) -> dict[str, str]:
 
 
 if __name__ == "__main__":
-    print("pseudo initialzing serverless (sleep 5s)")
-    time.sleep(5)
+    print("pseudo initialzing serverless (sleep 3s)")
+    time.sleep(3)
     sentry_sdk.init(
         dsn=os.getenv("SENTRY_DSN"),
         integrations=[LoguruIntegration()],
@@ -53,6 +53,8 @@ if __name__ == "__main__":
         # Set profiles_sample_rate to 1.0 to profile 100% of sampled transactions.
         # We recommend adjusting this value in production.
         #profiles_sample_rate=1.0,
+        environment=os.getenv("SENTRY_ENVIRONMENT"),
+        release="20241209",
     )
     sentry_sdk.profiler.start_profiler()
     runpod.serverless.start({"handler": handler})

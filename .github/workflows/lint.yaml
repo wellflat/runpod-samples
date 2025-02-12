@@ -1,0 +1,19 @@
+name: Check code using Ruff
+on:
+  push:
+    branches: ['develop']
+  pull_request:
+    branches: ['main']
+    types: [closed]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+      - name: Check code using Ruff
+        uses: astral-sh/ruff-action@v3
+        with:
+          version: "latest"
+          args: "--config ruff.toml"

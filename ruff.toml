@@ -1,0 +1,19 @@
+exclude = [
+    ".github",
+    "model",
+    "test",
+]
+
+line-length = 120
+indent-width = 4
+
+target-version = "py312"
+
+[lint]
+ignore = ["F841"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = true
+line-ending = "auto"

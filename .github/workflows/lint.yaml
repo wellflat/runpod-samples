@@ -16,4 +16,4 @@ jobs:
         uses: astral-sh/ruff-action@v3
         with:
           version: "latest"
-          args: "check src --config ruff.toml"
+          args: "check src --isolated"

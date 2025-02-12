@@ -12,20 +12,18 @@ from sentry_sdk.integrations.serverless import serverless_function
 from loguru import logger
 import sentry_sdk.profiler
 
+
 def process_input(input_data: dict[str, str]) -> dict[str, str]:
-    transaction = sentry_sdk.start_transaction(op="process_input", name="process_input(transaction)")
-    span = transaction.start_child(op="greeting", name="greeting")
-    name = input_data["name"]
-    greeting = f"hello, {name}"
-    span.finish()
-    number = int(input_data["number"])
-    span = transaction.start_child(op="calculate_fibonacci", name=f"calculate_fibonacci({number})")
-    fibonacci_result = calculate_fibonacci(number)
-    span.finish()
-    span = transaction.start_child(op="hash", name=f"hashsha256({number})")
-    digest = hashlib.sha256(f"{greeting}-{fibonacci_result}".encode()).hexdigest()
-    span.finish()
-    transaction.finish()
+    with sentry_sdk.start_transaction(op="process_input", name="process_input(transaction)") as transaction:
+        name = input_data["name"]
+        greeting = f"hello, {name}"
+        number = int(input_data["number"])
+        with transaction.start_child(op="calculate_fibonacci", name=f"calculate_fibonacci({number})"):
+            fibonacci_result = calculate_fibonacci(number)
+        
+        with transaction.start_child(op="hash", name=f"hashsha256({number})"):
+            digest = hashlib.sha256(f"{greeting}-{fibonacci_result}".encode()).hexdigest()    
+    
     return { "greeting": greeting, "fibonacci": str(fibonacci_result), "digest": digest }
 
 
@@ -54,7 +52,7 @@ if __name__ == "__main__":
         # We recommend adjusting this value in production.
         #profiles_sample_rate=1.0,
         environment=os.getenv("SENTRY_ENVIRONMENT"),
-        release="20241209",
+        release="20250212",
     )
     sentry_sdk.profiler.start_profiler()
     runpod.serverless.start({"handler": handler})

@@ -12,3 +12,8 @@ dependencies = [
     "runpod>=1.7.5",
     "sentry-sdk[loguru]>=2.0.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.6",
+]
